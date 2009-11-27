@@ -1,0 +1,13 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  #header()
+  <body>
+    #formHeader(0 0)
+
+    #foreach ($item in $items)
+      #renderItem($item)
+    #end
+
+    #formFooter(0 0)
+  </body>
+</html>

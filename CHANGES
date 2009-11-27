@@ -1,0 +1,10 @@
+1.0.2
+=====
+* Fixed memory leak in session timeout manager
+
+1.0.1
+=====
+* Patched session id handling
+* Moved to Java core util.logging instead of Log4j
+* Added long session
+* cleaned up servlet code
