@@ -17,7 +17,7 @@ public final class ParameterParser {
             .getLogger(ParameterParser.class.getName());
 
     @SuppressWarnings("unchecked")
-    public static synchronized Map<String, Object> parseParams(final HttpServletRequest req) {
+    public static Map<String, Object> parseParams(final HttpServletRequest req) {
         
         String key;
         String[] values;
