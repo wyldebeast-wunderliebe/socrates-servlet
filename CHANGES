@@ -1,3 +1,13 @@
+1.0.6
+=====
+* Added remote address to meta data
+* enabled preload of data on init of survey
+* Added reminder key to metadata in case someone uses the regkey parameter
+  to start the questionnaire
+
+1.0.5
+=====
+* Added detection of 'previous' action for data handling
 
 1.0.4
 =====

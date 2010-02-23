@@ -39,10 +39,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 
 import com.w20e.socrates.config.ConfigurationResource;
 import com.w20e.socrates.data.Instance;
+import com.w20e.socrates.data.Node;
 import com.w20e.socrates.process.Runner;
 import com.w20e.socrates.process.RunnerContext;
 import com.w20e.socrates.process.RunnerContextImpl;
@@ -202,8 +202,6 @@ public class WebsurveyServlet extends HttpServlet {
             }
         }
 
-        LOGGER.finer("Session instantiated with id " + session.getId());
-
         // Hold all enable/disable options
         //
         Map<String, String> options = ServletHelper.determineOptions(req);
@@ -213,136 +211,26 @@ public class WebsurveyServlet extends HttpServlet {
         // the locale. If these are not available, all fails.
         //
         if (session.getAttribute("runnerCtx") == null) {
-
+            
+            LOGGER.finer("Session instantiated with id " + session.getId());
             LOGGER.fine("No runner context available in session; creating one");
-            String id = req.getParameter("id");
-
-            if (id == null) {
+          
+            if (req.getParameter("id") == null) {
                 LOGGER.severe("No id parameter in request");
-                res.sendRedirect("session-creation-error.html");
-                this.sessionMgr.invalidateSession(req);
-                res.getOutputStream().flush();
+                try {
+                    res.sendRedirect("session-creation-error.html");
+                    this.sessionMgr.invalidateSession(req);
+                    res.getOutputStream().flush();
+                } catch (IOException e) {
+                    LOGGER.severe("Couldn't even send error message..."
+                            + e.getMessage());
+                }
                 return;
             }
 
-            LOGGER.finest("Parameter id is " + id);
-            LOGGER.finest("Parameter locale is " + req.getParameter("locale"));
-            Locale locale = LocaleUtility.getLocale(req.getParameter("locale"),
-                    true);
-            LOGGER.finest("Using locale " + locale);
-
-            // Unique id for survey, defined by id and locale
-            //
-            String surveyId = ServletHelper.generateSurveyId(id, locale
-                    .toString());
-
-            URI qUri = QuestionnaireURIFactory.getInstance().determineURI(
-                    this.rootDir, id, locale);
-
-            /**
-             * Get global config.
-             */
-            Configuration cfg = null;
-
-            try {
-                cfg = ConfigurationResource.getInstance().getConfiguration(
-                        qUri.toURL());
-            } catch (ConfigurationException e1) {
-                LOGGER.severe("No configuration found for " + qUri);
-                res.sendRedirect("session-creation-error.html");
-                this.sessionMgr.invalidateSession(req);
-                res.getOutputStream().flush();
+            if (!initializeRunner(req, res, session, options)) {
+                LOGGER.severe("Could not create runner context. Bye for now.");
                 return;
-            }
-
-            LOGGER.fine("Using config URI " + qUri.toString());
-
-            try {
-                RunnerContextImpl ctx = this.runnerFactory.createContext(qUri,
-                        options);
-                ctx.setLocale(locale);
-                ctx.setQuestionnaireId(qUri);
-
-                /*
-                 * We may need to reread an existing data set. We do this if the
-                 * request didn't explicitly forbid it, and we do have either an
-                 * existing session or a stored instance file.
-                 */
-                if ("true".equals(cfg.getString("enablelongsessions", "true"))) {
-
-                    LOGGER.info("Has long session? "
-                            + this.sessionMgr.hasLongSession(req, surveyId));
-
-                    if (this.sessionMgr.hasLongSession(req, surveyId)
-                            && !"true".equals(options.get("disable_reload"))) {
-
-                        Instance inst = this.sessionMgr.salvageInstance(
-                                surveyId, req, ctx);
-
-                        if (inst != null) {
-                            ctx.setInstance(inst);
-                            LOGGER.fine("Setting state to "
-                                    + (String) inst.getMetaData()
-                                            .get("stateId"));
-                            ctx.getStateManager().setStateById(
-                                    (String) inst.getMetaData().get("stateId"));
-                        } else {
-                            LOGGER.warning("Unable to restore instance");
-                        }
-                    }
-                }
-
-                Map<String, Object> meta = ctx.getInstance().getMetaData();
-
-                meta.put("qId", id);
-                meta.put("locale", locale);
-
-                ServletHelper.setMetaData(req, meta);
-
-                // Store runner context in session
-                //
-                session.setAttribute("runnerCtx", new WebsurveyContext(ctx, id,
-                        locale));
-
-                // Output filename. If unset, default to overwritable file.
-                //
-                if (!meta.containsKey("filename")
-                        || meta.get("filename") == null) {
-
-                    meta.put("filename", id
-                            + (ctx.getModel().getMetaData().containsKey(
-                                    "Version") ? "-"
-                                    + ctx.getModel().getMetaData().get(
-                                            "Version") : "")
-                            + "_"
-                            + locale
-                            + "_"
-                            + WebsurveyServlet.FORMATTER.format(Calendar
-                                    .getInstance().getTime()) + "_"
-                            + meta.get("key"));
-                }
-
-                if ("true".equals(cfg.getString("enablelongsessions", "true"))) {
-
-                    // Finally, add cookie that holds info on user data, if we
-                    // don't
-                    // already have it, and set output
-                    // file name.
-                    //
-                    if (!this.sessionMgr.hasLongSession(req, surveyId)) {
-                        this.sessionMgr.createLongLivedSession(surveyId, meta
-                                .get("filename").toString()
-                                + "||" + session.getId(), res);
-                    }
-                }
-
-            } catch (UnsupportedMediumException e) {
-
-                this.sessionMgr.invalidateSession(req);
-
-                LOGGER.log(Level.SEVERE, "Error in creating runner context", e);
-                throw new ServletException("Could not create runner context "
-                        + e.getMessage());
             }
         }
 
@@ -394,6 +282,18 @@ public class WebsurveyServlet extends HttpServlet {
             Map<String, Object> params = ParameterParser.parseParams(req);
             ctx.setData(params);
 
+            // Do we have initial data already?
+            if ("true".equals(options.get("enable_preload_params"))) {
+                Node node;
+                for (String key: params.keySet()) {
+                    node = ctx.getInstance().getNode(key);
+                    if (node != null) {
+                        LOGGER.fine("Preloading node value " + params.get(key) + " for node " + node.getName());
+                        node.setValue(params.get(key));
+                    }
+                }
+            }
+
             ByteArrayOutputStream output = new ByteArrayOutputStream();
 
             ctx.setOutputStream(output);
@@ -417,8 +317,12 @@ public class WebsurveyServlet extends HttpServlet {
             // serialization.
             //
             if (req.getParameter("stateId") != null) {
+                LOGGER.fine("Setting state id to " + req.getParameter("stateId"));
                 ctx.getInstance().getMetaData().put("stateId",
                         req.getParameter("stateId"));
+                if (!ctx.getStateManager().setStateById(req.getParameter("stateId"))) {
+                    LOGGER.warning("Couldn't set stateId");
+                }
             }
 
             // Go two states back if 'previous' request, and simply execute
@@ -428,6 +332,8 @@ public class WebsurveyServlet extends HttpServlet {
                 RenderState state = ctx.getStateManager().previous();
 
                 LOGGER.finest("Fill data from instance");
+
+                ctx.setProperty("previous", "true");
 
                 if (state != null) {
 
@@ -446,6 +352,8 @@ public class WebsurveyServlet extends HttpServlet {
                         }
                     }
                 }
+            } else {
+                ctx.setProperty("previous", "false");
             }
 
             next(ctx, runner);
@@ -461,7 +369,7 @@ public class WebsurveyServlet extends HttpServlet {
                 String surveyId = ServletHelper.generateSurveyId(ctx
                         .getInstance().getMetaData().get("qId").toString(), ctx
                         .getLocale().toString());
-                
+
                 this.sessionMgr.invalidateLongSession(surveyId, req, res);
             }
 
@@ -514,7 +422,7 @@ public class WebsurveyServlet extends HttpServlet {
     private void next(final RunnerContext ctx, final Runner runner)
             throws Exception {
 
-        LOGGER.finest("Next page asked");
+        LOGGER.finest("Next state asked");
 
         // get next action till we receive the wait status. This
         // indicates that something is hanging out for user input.
@@ -522,7 +430,9 @@ public class WebsurveyServlet extends HttpServlet {
         while (runner.hasNext(ctx)) {
 
             LOGGER.finest("Doing next thing");
+            LOGGER.fine("Current action before next call: " + ctx.getCurrentAction());
             runner.next(ctx);
+            LOGGER.fine("Current action after next call: " + ctx.getCurrentAction());
             LOGGER.finest("Last result: " + ctx.getResult());
 
             // Failure may be due to validation, in which case we should
@@ -545,6 +455,9 @@ public class WebsurveyServlet extends HttpServlet {
                             + e.getMessage());
                 } else {
                     LOGGER.info("Failure in workflow (usually expected)");
+                    if (e != null) {
+                        LOGGER.info(e.getMessage());
+                    }
                 }
             } else if (ActionResultImpl.WAIT.equals(ctx.getResult().toString())) {
                 break;
@@ -552,4 +465,130 @@ public class WebsurveyServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Initialize the runner for a given questionnaire.
+     * 
+     * @param req
+     * @param res
+     * @param session
+     */
+    private boolean initializeRunner(HttpServletRequest req,
+            HttpServletResponse res, HttpSession session,
+            Map<String, String> options) {
+
+        String id = req.getParameter("id");
+        
+        LOGGER.finest("Parameter id is " + id);
+        LOGGER.finest("Parameter locale is " + req.getParameter("locale"));
+        Locale locale = LocaleUtility.getLocale(req.getParameter("locale"),
+                true);
+        LOGGER.finest("Using locale " + locale);
+
+        // Unique id for survey, defined by id and locale
+        //
+        String surveyId = ServletHelper.generateSurveyId(id, locale.toString());
+
+        URI qUri = QuestionnaireURIFactory.getInstance().determineURI(
+                this.rootDir, id, locale);
+
+        /**
+         * Get global config.
+         */
+        Configuration cfg = null;
+
+        try {
+            cfg = ConfigurationResource.getInstance().getConfiguration(
+                    qUri.toURL());
+        } catch (Exception e1) {
+            return false;
+        }
+
+        LOGGER.fine("Using config URI " + qUri.toString());
+
+        try {
+            RunnerContextImpl ctx = this.runnerFactory.createContext(qUri,
+                    options);
+            ctx.setLocale(locale);
+            ctx.setQuestionnaireId(qUri);
+
+            /*
+             * We may need to reread an existing data set. We do this if the
+             * request didn't explicitly forbid it, and we do have either an
+             * existing session or a stored instance file.
+             */
+            if ("true".equals(cfg.getString("enablelongsessions", "true"))) {
+
+                LOGGER.info("Has long session? "
+                        + this.sessionMgr.hasLongSession(req, surveyId));
+
+                if (this.sessionMgr.hasLongSession(req, surveyId)
+                        && !"true".equals(options.get("disable_reload"))) {
+
+                    Instance inst = this.sessionMgr.salvageInstance(surveyId,
+                            req, ctx);
+
+                    if (inst != null) {
+                        ctx.setInstance(inst);
+                        LOGGER.fine("Setting state to "
+                                + (String) inst.getMetaData().get("stateId"));
+                        ctx.getStateManager().setStateById(
+                                (String) inst.getMetaData().get("stateId"));
+                    } else {
+                        LOGGER.warning("Unable to restore instance");
+                    }
+                }
+            }
+
+            Map<String, Object> meta = ctx.getInstance().getMetaData();
+
+            meta.put("qId", id);
+            meta.put("locale", locale);
+
+            ServletHelper.setMetaData(req, meta);
+
+            // Store runner context in session
+            //
+            session.setAttribute("runnerCtx", new WebsurveyContext(ctx, id,
+                    locale));
+
+            // Output filename. If unset, default to overwritable file.
+            //
+            if (!meta.containsKey("filename") || meta.get("filename") == null) {
+
+                meta.put("filename",
+                        id
+                                + (ctx.getModel().getMetaData().containsKey(
+                                        "Version") ? "-"
+                                        + ctx.getModel().getMetaData().get(
+                                                "Version") : "")
+                                + "_"
+                                + locale
+                                + "_"
+                                + WebsurveyServlet.FORMATTER.format(Calendar
+                                        .getInstance().getTime()) + "_"
+                                + meta.get("key"));
+            }
+
+            if ("true".equals(cfg.getString("enablelongsessions", "true"))) {
+
+                // Finally, add cookie that holds info on user data, if we
+                // don't
+                // already have it, and set output
+                // file name.
+                //
+                if (!this.sessionMgr.hasLongSession(req, surveyId)) {
+                    this.sessionMgr.createLongLivedSession(surveyId, meta.get(
+                            "filename").toString()
+                            + "||" + session.getId(), res);
+                }
+            }
+        } catch (UnsupportedMediumException e) {
+
+            this.sessionMgr.invalidateSession(req);
+            LOGGER.log(Level.SEVERE, "Error in creating runner context", e);
+            return false;
+        }
+
+        return true;
+    }
 }

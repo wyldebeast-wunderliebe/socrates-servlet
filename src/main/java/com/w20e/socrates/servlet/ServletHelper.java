@@ -104,6 +104,7 @@ public class ServletHelper {
         HttpSession session = req.getSession(false);
 
         meta.put("userAgent", ServletHelper.determineUserAgent(req));
+        meta.put("remoteAddress", req.getRemoteAddr());
 
         URI refererUrl = null;
 
@@ -132,6 +133,7 @@ public class ServletHelper {
                 if (key == null) {
                     if (req.getParameter("regkey") != null) {
                         meta.put("key", req.getParameter("regkey"));
+                        meta.put("reminder", req.getParameter("regkey"));
                     } else {
                         meta.put("key", session.getId());
                     }

@@ -55,7 +55,7 @@ public class TestXMLRPCFormatter extends TestCase {
 					model, inst, null);
 			ctx.setLocale(new Locale("en", "GB"));
 
-			this.formatter.format(testItems, out, ctx);
+			//this.formatter.format(testItems, out, ctx);
 			// System.out.println(out.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
