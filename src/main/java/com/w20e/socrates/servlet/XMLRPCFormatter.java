@@ -106,7 +106,16 @@ public final class XMLRPCFormatter {
 		try {
 
 			atts.clear();
-			atts.addAttribute("", "", "selector", "CDATA", "#field-" + rItem);
+			
+			String selector = "";
+			
+			if (rItem.startsWith("group:")) {
+                selector = "#fieldset-" + rItem.substring(6);
+			} else {
+			    selector = "#field-" + rItem;
+			}
+			
+            atts.addAttribute("", "", "selector", "CDATA", selector);			
 			atts.addAttribute("", "", "selectorType", "CDATA", "");
 
 			// Is the item required?
@@ -126,7 +135,7 @@ public final class XMLRPCFormatter {
 
 			// Relevance
 			atts.clear();
-			atts.addAttribute("", "", "selector", "CDATA", "#field-" + rItem);
+			atts.addAttribute("", "", "selector", "CDATA", selector);
 			atts.addAttribute("", "", "selectorType", "CDATA", "");
 
             if ("true".equals(itemProps.get("relevant"))) {
@@ -145,7 +154,7 @@ public final class XMLRPCFormatter {
 
 			// Readonly-ness
 			atts.clear();
-			atts.addAttribute("", "", "selector", "CDATA", "#field-" + rItem);
+			atts.addAttribute("", "", "selector", "CDATA", selector);
 			atts.addAttribute("", "", "selectorType", "CDATA", "");
 
             if ("true".equals(itemProps.get("readonly"))) {
@@ -165,8 +174,7 @@ public final class XMLRPCFormatter {
 			// New values we might have
 			if (itemProps.get("value") != null) {
 				atts.clear();
-				atts.addAttribute("", "", "selector", "CDATA", "#field-"
-						+ rItem + " div.readonly-value");
+				atts.addAttribute("", "", "selector", "CDATA", selector + " div.readonly-value");
 				atts.addAttribute("", "", "selectorType", "CDATA", "");
 				atts.addAttribute("", "", "name", "CDATA", "replaceInnerHTML");
 
@@ -183,8 +191,7 @@ public final class XMLRPCFormatter {
 			// Redo label if necessary
 			if (itemProps.get("label") != null) {
 				atts.clear();
-				atts.addAttribute("", "", "selector", "CDATA", "#field-"
-						+ rItem + " label.field-label");
+				atts.addAttribute("", "", "selector", "CDATA", selector + " label.field-label");
 				atts.addAttribute("", "", "selectorType", "CDATA", "");
 				atts.addAttribute("", "", "name", "CDATA", "replaceInnerHTML");
 
@@ -200,8 +207,7 @@ public final class XMLRPCFormatter {
 	         // Redo hint if necessary
             if (itemProps.get("hint") != null) {
                 atts.clear();
-                atts.addAttribute("", "", "selector", "CDATA", "#field-"
-                        + rItem + " div.hint");
+                atts.addAttribute("", "", "selector", "CDATA", selector + " div.hint");
                 atts.addAttribute("", "", "selectorType", "CDATA", "");
                 atts.addAttribute("", "", "name", "CDATA", "replaceInnerHTML");
 

@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import com.w20e.socrates.data.Instance;
@@ -62,11 +63,13 @@ public final class ValidatorHelper {
         UTF8ResourceBundle bundle = UTF8ResourceBundleImpl.getBundle(
                 "websurvey", locale);
 
+        Stack<Group> parents = new Stack<Group>();
+        
 		// Let's loop over renderable items.
 		//
 		for (Renderable rItem: items) {
 
-			addItem(rItem, props, pContext.getInstance(), pContext.getModel(),
+			addItem(rItem, parents, props, pContext.getInstance(), pContext.getModel(),
 					pContext.getRenderConfig(), bundle, locale);
 
 		}
@@ -80,7 +83,7 @@ public final class ValidatorHelper {
 	 * @param pContext
 	 * @param bundle
 	 */
-	private static void addItem(Renderable rItem,
+	private static void addItem(Renderable rItem, Stack<Group> parents,
 	        final Map<String, Map<String, String>> props,
 			final Instance inst, Model model, RenderConfig cfg,
 			final UTF8ResourceBundle bundle, final Locale locale) {
@@ -90,10 +93,14 @@ public final class ValidatorHelper {
 		 */
 		if (rItem instanceof Group) {
 
+		    parents.push((Group) rItem);
+		    
 			for (Renderable rSubItem: ((Group) rItem).getItems()) {
 
-				addItem(rSubItem, props, inst, model, cfg, bundle, locale);
+				addItem(rSubItem, parents, props, inst, model, cfg, bundle, locale);
 			}
+			
+			parents.pop();
 		}
 
 		if (!(rItem instanceof Control)) {
@@ -127,8 +134,22 @@ public final class ValidatorHelper {
 
 			if (NodeValidator.isRelevant(itemProps, inst, model)) {
                 localProps.put("relevant", "true");
+                for (Group group: parents) {
+                    LOGGER.fine("Adding relevant to parent " + group.getId());
+                    Map<String, String> groupProps = new HashMap<String, String>();
+                    groupProps.put("relevant", "true");
+                    props.put("group:" + group.getId(), groupProps);
+                }
 			} else {
                 localProps.put("relevant", "false");
+                for (Group group: parents) {
+                    if (!props.containsKey("group:" + group.getId())) {
+                        LOGGER.fine("Removing relevant of parent " + group.getId());
+                        Map<String, String> groupProps = new HashMap<String, String>();
+                        groupProps.put("relevant", "false");
+                        props.put("group:" + group.getId(), groupProps);
+                    }
+                }
 			}
 
             if (NodeValidator.isReadOnly(itemProps, inst, model)) {

@@ -271,12 +271,10 @@ public class WebsurveyServlet extends HttpServlet {
 
             // Add specific options
             // @todo This should move to the runner creation options.
-            if (!ctx.getData().containsKey("renderOptions")) {
+            if (ctx.getProperty("renderOptions") == null) {
                 ctx.setProperty("renderOptions", options);
             } else {
-                options.putAll((Map<String, String>) ctx.getData().get(
-                        "renderOptions"));
-                ctx.setProperty("renderOptions", options);
+                ((Map<String, String>) ctx.getProperty("renderOptions")).putAll(options);
             }
 
             Map<String, Object> params = ParameterParser.parseParams(req);
