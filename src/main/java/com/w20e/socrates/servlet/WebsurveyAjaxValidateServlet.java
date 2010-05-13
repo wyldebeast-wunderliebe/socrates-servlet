@@ -185,7 +185,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
 
                 if (localProps.keySet().size() > 0) {
                     LOGGER.fine("Adding to filtered: " + rItem);
-                    filtered.put(rItem, after.get(rItem));
+                    filtered.put(rItem, localProps);
                 }
             }
 

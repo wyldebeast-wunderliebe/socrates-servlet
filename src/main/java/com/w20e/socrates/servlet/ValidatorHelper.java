@@ -189,6 +189,8 @@ public final class ValidatorHelper {
 					NodeValidator.validate(n, itemProps, inst, model);
                     localProps.put("alert", "");
 				} catch (Exception cv) {
+				    LOGGER.finest("Exception during validation" + cv.getMessage());
+				    LOGGER.finest("Node value: " + n.getValue() +"; type " + itemProps.getType());
 					String msg = "";
 
 					if ("".equals(((Control) rItem).getAlert())) {

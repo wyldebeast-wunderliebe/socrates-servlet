@@ -319,7 +319,7 @@ public class WebsurveyServlet extends HttpServlet {
                 ctx.getInstance().getMetaData().put("stateId",
                         req.getParameter("stateId"));
                 if (!ctx.getStateManager().setStateById(req.getParameter("stateId"))) {
-                    LOGGER.warning("Couldn't set stateId");
+                    LOGGER.warning("Couldn't set stateId to " + req.getParameter("stateId"));
                 }
             }
 
