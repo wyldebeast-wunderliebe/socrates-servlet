@@ -20,6 +20,7 @@
 package com.w20e.socrates.servlet;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -32,6 +33,7 @@ import com.w20e.socrates.model.NodeValidator;
 import com.w20e.socrates.rendering.CascadedSelect;
 import com.w20e.socrates.rendering.Control;
 import com.w20e.socrates.rendering.Group;
+import com.w20e.socrates.rendering.Option;
 import com.w20e.socrates.rendering.OptionList;
 import com.w20e.socrates.rendering.RenderConfig;
 import com.w20e.socrates.rendering.RenderState;
@@ -313,7 +315,7 @@ public final class StateManagerTestImpl implements StateManager {
 				String refvalue = this.instance.getNode(ref).getValue()
 						.toString();
 
-				OptionList options = ((CascadedSelect) c).getOptions(refvalue);
+				Collection<Option> options = ((CascadedSelect) c).getOptions(refvalue);
 				
 				if (options.size() == 0) {
 					return false;

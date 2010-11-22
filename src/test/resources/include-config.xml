@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <woliweb>
+
   <messages>
     <no_render_info>No rendering info found</no_render_info>
   </messages>
@@ -13,6 +14,12 @@
   </runner>
 
   <formatter>
+  
+    <options>
+      <enable_js>true</enable_js>
+      <enable_ajax_validation>false</enable_ajax_validation>
+    </options>
+  
     <class>com.w20e.socrates.formatting.VelocityHTMLFormatter</class>
     <locale><prefix>websurvey</prefix></locale>
     <velocity>
@@ -41,8 +48,9 @@
   </model>
 
   <submission>
-    <type>file</type>
-    <basedir>./target/</basedir>
+    <!--type>file</type-->
+    <type>none</type>
+    <!--basedir>./target/</basedir-->
   </submission>
 
 </woliweb>

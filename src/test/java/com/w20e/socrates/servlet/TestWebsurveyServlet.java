@@ -41,7 +41,7 @@ public class TestWebsurveyServlet extends TestCase {
 		try {
 			// welcoming page
 			response = this.client
-					.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB");
+					.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB&enable_js=false");
 
 			// register handler here, to make sure proper config is done.
 			HandlerManager.getInstance().register("file",
@@ -55,6 +55,11 @@ public class TestWebsurveyServlet extends TestCase {
 
 			assertTrue("Input field", form.isTextParameter("A01"));
 			assertTrue("Input field", form.isTextParameter("stateId"));
+			
+			// test render options
+			assertTrue(response.getText().indexOf("enable_js: false") > -1);
+			assertTrue(response.getText().indexOf("enable_ajax_validation: false") > -1);
+			
 			form.setParameter("A01", "");
 			
 			// Let's not fill in any data, and see
@@ -122,9 +127,9 @@ public class TestWebsurveyServlet extends TestCase {
 			form = response.getFormWithID("survey");
 
 			assertNotNull("No form found", form);
-			
+
 			assertTrue(form.hasParameterNamed("A06"));
-			
+
 			assertEquals("A06 options", Arrays.asList(new String[] { "opt10",
 					"opt11", "opt12" }), Arrays.asList(form
 					.getOptionValues("A06")));
@@ -136,22 +141,23 @@ public class TestWebsurveyServlet extends TestCase {
 
 			// Would be nice to test this, however, junit seems to f*ck things
 			// up after POST
-			// form.setParameter("A07", "10:30");
-			// response = form.submit();
+			form.setParameter("A07", "10:30");
+			response = form.submit();
 
 			response = form.submit();
 
 			form = response.getFormWithID("survey");
-
+			
 			assertTrue(form.hasParameterNamed("B01"));
 
 			response = form.submit();
-
+			
 			form = response.getFormWithID("survey");
 			assertTrue(form.hasParameterNamed("M1"));
-
+			
 			// Submission, or so I hope...
-			response = form.submit();
+			//response = form.submit();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

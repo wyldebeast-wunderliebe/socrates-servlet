@@ -29,8 +29,8 @@
       </item>
       <item id="A04" bind="A04" label="Question A04" type="Input" alert="" required="true()"/>
     </itemgroup>
-    <item id="A05" label="Question A05" type="Select" appearance="full" alert="Question A05 alert" 
-      required="true()">
+    <item id="A05" label="Question A05" type="Select" appearance="full"
+      alert="Question A05 alert" required="true()">
       <option label="Option 0" value="opt0"/>
       <option label="Option 1" value="opt1"/>
       <option label="Option 2" value="opt2"/>
@@ -53,7 +53,8 @@
         <option value="opt22" label="Option 2 2"/>
       </cascadedoptionlist>
     </item>
-    <item id="A07" spsslabel="" label="Question A07" type="Input" default="xxx" required="true()" 
+
+    <item id="A07" label="Question A07" type="Input" default="xxx" required="true()" 
       datatype="xs:hours-quarters"/>
 
     <item id="B01" spsslabel="" label="Question B01" type="Input" hint="Hint B01" 
