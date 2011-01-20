@@ -39,7 +39,15 @@ public class TestWebsurveyServlet extends TestCase {
 		WebResponse response = null;
 
 		try {
-			// welcoming page
+			//Start with JS enabled, just for fun...
+			response = this.client
+			.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB");
+					
+			// test render options
+			assertTrue(response.getText().indexOf("enable_js: true") > -1);
+			assertTrue(response.getText().indexOf("enable_ajax_validation: false") > -1);
+			
+			// welcoming page, now without JS
 			response = this.client
 					.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB&enable_js=false");
 
@@ -75,9 +83,8 @@ public class TestWebsurveyServlet extends TestCase {
 			assertTrue("Input field", form.isTextParameter("A01"));
 
 			// fill in field value, since it is required...
-			form.setParameter("A01", "XXX");
+			form.setParameter("A01", "请在这里写下来");
 			response = form.submit();
-			// System.out.println(response.getText());
 
 			form = response.getFormWithID("survey");
 
@@ -86,6 +93,26 @@ public class TestWebsurveyServlet extends TestCase {
 			assertEquals("Form action", "Survey", form.getAction());
 			assertEquals("A02 options", Arrays.asList(new String[] { "-10",
 					"-11", "-12" }), Arrays.asList(form.getOptionValues("A02")));
+
+			// let's go one step back...
+
+			response = form.submit(form.getSubmitButton("previous", "previous"));
+
+			form = response.getFormWithID("survey");
+
+			assertTrue("Input field", form.isTextParameter("A01"));
+			
+			
+			response = form.submit();
+
+			form = response.getFormWithID("survey");
+
+			assertNotNull("No form found", form);
+			assertEquals("Form method", "POST", form.getMethod());
+			assertEquals("Form action", "Survey", form.getAction());
+			assertEquals("A02 options", Arrays.asList(new String[] { "-10",
+					"-11", "-12" }), Arrays.asList(form.getOptionValues("A02")));
+			
 			form.setParameter("A02", "-11");
 			response = form.submit();
 

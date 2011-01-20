@@ -175,7 +175,8 @@ public class WebsurveyServlet extends HttpServlet {
 
         // Always use UTF!
         res.setContentType("text/html;charset=UTF-8");
-
+        req.setCharacterEncoding("UTF-8");
+        
         // P3P header necessary for IE cookie policy
         res.addHeader("P3P", "CP='CAO PSA CONi OUR DEM ONL'");
 
@@ -278,6 +279,7 @@ public class WebsurveyServlet extends HttpServlet {
             }
 
             Map<String, Object> params = ParameterParser.parseParams(req);
+            
             ctx.setData(params);
 
             // Do we have initial data already?

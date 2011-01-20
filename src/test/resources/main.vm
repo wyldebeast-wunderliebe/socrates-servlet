@@ -4,16 +4,16 @@
   <body>
   
     <!-- render options -->
-    #foreach ($opt in $renderOptions.keySet())
-      <!-- $opt: $renderOptions.get($opt) -->
+    #foreach ($opt in $renderOptions.keys())
+      <!-- $opt: $renderOptions.isEnabled($opt, false) -->
     #end
   
-    #formHeader(0 0)
+    #formHeader(1 1)
 
     #foreach ($item in $items)
       #renderItem($item)
     #end
 
-    #formFooter(0 0)
+    #formFooter(1 1)
   </body>
 </html>

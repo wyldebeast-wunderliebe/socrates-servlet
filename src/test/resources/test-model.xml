@@ -5,11 +5,12 @@
     <meta name="foo2" value="bar2"/>
   </metadata>
 
-    <item id="A01" label="Question A01" type="Input" hint="Hint A01" alert="Question A01 alert"
+    <item id="A01" label="Question 请在这里写下来" type="Input" hint="Hint A01" 
+      alert="Question A01 alert"
       relevant="((1 &gt;= -2000) and (2 &lt;= 4)) and (1 != 0)" default="" required="true()"/>
-    <item id="A02" label="Question A02" type="Select" hint="Hint A02" appearance="full" 
+    <item id="A02" label="Question A02" type="Select" hint="Hint A02" appearance="compact" 
       datatype="xs:integer" alert="Question A02 alert" required="false()">
-      <option value="-10" label="Option 0"/>
+      <option value="-10" label="Option 0" hint="Option -10 hint"/>
       <option value="-11" label="Option 1"/>
       <option value="-12" label="Option 2"/>
     </item>

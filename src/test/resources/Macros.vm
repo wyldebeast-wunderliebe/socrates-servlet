@@ -259,29 +259,6 @@
   <div class="progress">
     <center><div class="probar" style="width: $percentage_done%"></div></center>
   </div>
-  <table class="section">
-    <tr>
-      <td>
-       #if ($section.startsWith("intro"))
-         $i18n.getString("section0")
-       #elseif ($section.startsWith("A"))
-         $i18n.getString("section1")
-       #elseif ($section.startsWith("B"))
-         $i18n.getString("section2")
-       #elseif ($section.startsWith("C"))
-         $i18n.getString("section3")
-       #elseif ($section.startsWith("D"))
-         $i18n.getString("section4")
-       #elseif ($section.startsWith("E"))
-         $i18n.getString("section5")
-       #elseif ($section.startsWith("F"))
-         $i18n.getString("section6")
-       #elseif ($section.startsWith("G"))
-         $i18n.getString("section7")
-       #end
-      </td>
-    </tr>
-  </table>
 #end
 ##############################################################################
 ##
@@ -314,7 +291,7 @@
 ## determining whether next and previous are shown.
 ##
 #macro(formHeader $showPrevious $showNext)
-  <form id="survey" name="survey" action="Survey" method="POST">
+  <form  accept-charset="UTF-8" id="survey" name="survey" action="Survey" method="POST">
     <input type="hidden" name="stateId" value="$stateId"/>
     #navbar($showPrevious $showNext)
 #end
@@ -332,30 +309,26 @@
 ## Render the navigation bar for header and footer
 ##
 #macro(navbar $showPrevious $showNext)
-  <table class="navbar" cellpadding="0" cellspacing="0">
-    <tr>
-    #if ($showPrevious == 1)
-      <td width="23px" 
-        onclick="document.location = 'Survey?previous=1&stateId=$stateId'">
-        <img class="img" src="img/previous.jpg" name="previous" border="0" 
-          alt="Previous">
-      </td>
-      <td width="100px" id="navPrevious" class="navtext"
-        onclick="document.location = 'Survey?previous=1&stateId=$stateId'">
-        $i18n.getString("previous")
-      </td>
-    #end
-    #if ($showNext == 1)
-      <td width="150px" class="navtext" onclick="document.forms[0].submit()">
-        $i18n.getString("next")
-      </td>
-      <td class="img" width="23px" onclick="document.forms[0].submit()">
-        <img src="img/next.jpg" name="next" border="0" alt="Next">
-      </td>
-    #end
-      <td class="info"></td>
+
+  #if ($showPrevious == 1 || $showNext == 1)
+    <table class="navbar $class">
+      <tr>
+      #if ($showPrevious == 1)
+        <td>
+          <input type="submit" name="previous" class="navPrev" 
+            value="previous"/>
+        </td>
+      #end
+      
+      #if ($showNext == 1)
+        <td>
+          <input type="submit" class="navNext" 
+            value="next"/>
+        </td>
+      #end
     </tr>
-  </table>
+    </table>
+  #end
 #end
 
 
