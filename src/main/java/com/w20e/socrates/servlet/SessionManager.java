@@ -125,6 +125,15 @@ public class SessionManager {
 
             LOGGER.fine("Creating new session because of new id param");
             return createSession(req);
+            
+        } else if ((!hasSession(req)) && req.getParameter("session_id") != null) {
+        	
+        	// fallback to session id as parameter
+
+        	if (this.sessionRefs.containsKey(req.getParameter("session_id"))) {
+
+        		return this.sessionRefs.get(req.getParameter("session_id"));
+        	}
         }
 
         return req.getSession(false);

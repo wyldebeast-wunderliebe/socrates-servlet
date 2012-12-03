@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.logging.Logger;
 
+import org.apache.commons.configuration.Configuration;
+
 import com.w20e.socrates.data.Instance;
 import com.w20e.socrates.data.Node;
 import com.w20e.socrates.model.ConstraintViolation;
@@ -58,10 +60,12 @@ public final class ValidatorHelper {
 			throws Exception {
 
         Locale locale = pContext.getLocale();
-
-        // @todo: the locale prefix should be configurable
-        UTF8ResourceBundle bundle = UTF8ResourceBundleImpl.getBundle(
-                "websurvey", locale);
+        
+        Configuration cfg = pContext.getConfiguration();
+        
+        String base = cfg.getString("formatter.locale.prefix");
+        
+        UTF8ResourceBundle bundle = UTF8ResourceBundleImpl.getBundle(base, locale);
 
         Stack<Group> parents = new Stack<Group>();
         

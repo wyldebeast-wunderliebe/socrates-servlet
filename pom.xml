@@ -4,7 +4,7 @@
   <groupId>socrates</groupId>
   <artifactId>socrates-servlet</artifactId>
   <name>Socrates Servlet</name>
-  <version>1.0.7</version>
+  <version>1.0.8-SNAPSHOT</version>
   <description></description>
 
   <parent>
@@ -31,12 +31,12 @@
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates</artifactId>
-      <version>3.2.3</version>
+      <version>3.2.5-SNAPSHOT</version>
     </dependency>  
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates-impl</artifactId>
-      <version>2.3.9</version>
+      <version>2.3.11-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -49,7 +49,7 @@
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates-velocity-formatter</artifactId>
-      <version>1.0.7</version>
+      <version>1.0.8</version>
       <scope>test</scope>
     </dependency>    
     <dependency>
