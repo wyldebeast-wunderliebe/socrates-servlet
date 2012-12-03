@@ -21,7 +21,7 @@ public final class ParameterParser {
         
         String key;
         String[] values;
-        Map<String, Object> newparams = new HashMap<String, Object>();
+        final Map<String, Object> newparams = new HashMap<String, Object>();
         
         for (Enumeration<String> params = req.getParameterNames(); params.hasMoreElements(); ) {
             key = params.nextElement();

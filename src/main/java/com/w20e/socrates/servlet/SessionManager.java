@@ -413,5 +413,4 @@ public class SessionManager {
 
 		return this.sessionRefs.size();
 	}
-
 }

@@ -102,7 +102,6 @@ public class TestWebsurveyServlet extends TestCase {
 
 			assertTrue("Input field", form.isTextParameter("A01"));
 			
-			
 			response = form.submit();
 
 			form = response.getFormWithID("survey");

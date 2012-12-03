@@ -1,2 +1,3 @@
 * Enable multiple values for given parameter
 * Get rid of mapRequestToMap methods
+* make determineOptions return RenderOptions impl

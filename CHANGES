@@ -1,6 +1,7 @@
 1.0.8
 =====
 * Added support for WIS API
+* Added session retrieve based on session_id parameter
 
 1.0.7
 =====
