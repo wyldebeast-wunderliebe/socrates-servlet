@@ -61,14 +61,14 @@ import com.w20e.socrates.workflow.ActionResultImpl;
 import com.w20e.socrates.workflow.Failure;
 
 /**
- * Servlet for WoliWeb questionnaire. The servlet takes just one initialization
+ * Servlet for Socrates questionnaires. The servlet takes just one initialization
  * parameter: the location of the questionnaire config files. This can be
- * specified by either adding a java environment variable woliweb.cfg.root to
+ * specified by either adding a java environment variable socrates.cfg.root to
  * the JRE arguments, or by specifying an initial parameter in the web.xml.
- * Default is <code>/var/lib/woliweb/etc</code>. The servlet contains some logic
- * to be able to go forwards and backwards, and, in case of browser 'back'
- * actions, picking up the correct state of the questionnaire. The WoliWeb
- * servlet expects a 'state' parameter always, indicating the unique state for
+ * 
+ * The servlet contains some logic to be able to go forwards and backwards, and,
+ * in case of browser 'back' actions, picking up the correct state of the questionnaire. The
+ * Servlet expects a 'state' parameter always, indicating the unique state for
  * the questionnaire. This enables the questionnaire runner to reset it's state
  * if someone happens to jump back and forward by means of the browser buttons.
  * 
@@ -111,7 +111,7 @@ public class WebsurveyServlet extends HttpServlet {
     private String rootDir;
 
     /**
-     * The init method creates an instance of the Socrates class, and allocates
+     * The 'init' method creates an instance of the Socrates class, and allocates
      * initial resources. This includes compiling of XSL style sheets and
      * allocation of the database connections.
      * 
@@ -158,8 +158,8 @@ public class WebsurveyServlet extends HttpServlet {
      * new session based on the given id parameter. If there is also no id
      * parameter, it's an error. If the id parameter is given, create a new
      * runner context anyway. If a parameter called regkey is given, this
-     * parameter is used for storage of the instance. This way, a user may
-     * provide it's own key.
+     * parameter is used for storage and possibly retrieval of the instance.
+     * This way, a user may provide it's own key.
      * 
      * @param req
      *            The request
@@ -209,15 +209,15 @@ public class WebsurveyServlet extends HttpServlet {
 
         // If no runner yet for this session, create one. We should have
         // startup param's for the runner, like the questionnaire to run, and
-        // the locale. If these are not available, all fails.
+        // the locale. If these are not available, check for regkey. Else, all fails.
         //
         if (session.getAttribute("runnerCtx") == null) {
             
             LOGGER.finer("Session instantiated with id " + session.getId());
             LOGGER.fine("No runner context available in session; creating one");
           
-            if (req.getParameter("id") == null) {
-                LOGGER.severe("No id parameter in request");
+            if (req.getParameter("id") == null && req.getParameter("regkey") == null) {
+                LOGGER.warning("No id nor regkey parameter in request");
                 try {
                     res.sendRedirect("session-creation-error.html");
                     this.sessionMgr.invalidateSession(req);
@@ -466,11 +466,13 @@ public class WebsurveyServlet extends HttpServlet {
     }
 
     /**
-     * Initialize the runner for a given questionnaire.
+     * Initialize the runner for a given questionnaire. The runner, if successfully created, is stored in the 'runnerCtx' attribute
+     * of the session. 
      * 
-     * @param req
-     * @param res
-     * @param session
+     * @param req HTTP request
+     * @param res HTTP response
+     * @param session HTTP session
+     * @param options any specific creation options
      */
     private boolean initializeRunner(HttpServletRequest req,
             HttpServletResponse res, HttpSession session,
@@ -537,6 +539,19 @@ public class WebsurveyServlet extends HttpServlet {
                         LOGGER.warning("Unable to restore instance");
                     }
                 }
+            } else if (req.getParameter("regkey") != null) {
+                Instance inst = this.sessionMgr.salvageInstanceFromRegkey(req.getParameter("regkey"),
+                        req, ctx);
+
+                if (inst != null) {
+                    ctx.setInstance(inst);
+                    LOGGER.fine("Setting state to "
+                            + (String) inst.getMetaData().get("stateId"));
+                    ctx.getStateManager().setStateById(
+                            (String) inst.getMetaData().get("stateId"));
+                } else {
+                    LOGGER.warning("Unable to restore instance");
+                }            
             }
 
             Map<String, Object> meta = ctx.getInstance().getMetaData();

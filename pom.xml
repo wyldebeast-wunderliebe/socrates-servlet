@@ -4,7 +4,7 @@
   <groupId>socrates</groupId>
   <artifactId>socrates-servlet</artifactId>
   <name>Socrates Servlet</name>
-  <version>1.0.7</version>
+  <version>1.0.8-SNAPSHOT</version>
   <description></description>
 
   <parent>
