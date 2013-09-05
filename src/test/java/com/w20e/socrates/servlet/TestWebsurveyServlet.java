@@ -153,16 +153,29 @@ public class TestWebsurveyServlet extends TestCase {
 			form = response.getFormWithID("survey");
 
 			assertNotNull("No form found", form);
-
+			
 			assertTrue(form.hasParameterNamed("A06"));
 
 			assertEquals("A06 options", Arrays.asList(new String[] { "opt10",
 					"opt11", "opt12" }), Arrays.asList(form
 					.getOptionValues("A06")));
 
+			form.setParameter("A06", "opt10");
+
 			response = form.submit();
 
 			form = response.getFormWithID("survey");
+			
+			assertTrue(form.hasParameterNamed("A06a"));
+
+			assertEquals("A06a options", Arrays.asList(new String[] { "opt100",
+					"opt101", "opt102" }), Arrays.asList(form
+					.getOptionValues("A06a")));
+
+			response = form.submit();
+
+			form = response.getFormWithID("survey");
+
 			assertTrue(form.hasParameterNamed("A07"));
 
 			// Would be nice to test this, however, junit seems to f*ck things

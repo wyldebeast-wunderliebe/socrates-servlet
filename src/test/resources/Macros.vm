@@ -15,8 +15,6 @@
       #renderMatrix($ctl)
     #elseif ($ctl.getType() == "select")
       #renderSelect($ctl)
-    #elseif ($ctl.getType() == "cascadedselect")
-      #renderCascadedSelect($ctl)
     #elseif ($ctl.getType() == "textarea")
       #renderTextArea($ctl)
     #elseif ($ctl.getType() == "input")
@@ -72,7 +70,7 @@
 
     #if ($item.getProperty("appearance") == "minimal")
       <select id="$item.getId()" name="$item.getId()">
-        #foreach ($opt in $item.getOptions())
+        #foreach ($opt in $context.get($item.getId()).get('options'))
           <option title="$opt.getHint()" value="$opt.getValue()"
           #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
             selected="selected"
@@ -82,7 +80,7 @@
       </select>
     #elseif ($item.getProperty("appearance") == "compact")
       <select id="$item.getId()" name="$item.getId()" size="3">
-        #foreach ($opt in $item.getOptions())
+        #foreach ($opt in $context.get($item.getId()).get('options'))
           <option title="$opt.getHint()" value="$opt.getValue()"
           #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
             selected="selected"
@@ -91,7 +89,7 @@
         #end
       </select>
     #else
-      #foreach ($opt in $item.getOptions())
+      #foreach ($opt in $context.get($item.getId()).get('options'))
         <input type="radio" name="$item.getId()" id="$opt.getValue()" value="$opt.getValue()"
         #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
           checked="checked"

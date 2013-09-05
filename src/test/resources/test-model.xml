@@ -36,6 +36,7 @@
       <option label="Option 1" value="opt1"/>
       <option label="Option 2" value="opt2"/>
     </item>
+
     <item id="A06" label="Question A06" type="CascadedSelect" 
        noderef="A05" appearance="full" alert="Question A06 alert" required="false()">
       <cascadedoptionlist refvalue="opt0">
@@ -52,6 +53,20 @@
         <option value="opt20" label="Option 2 0"/>
         <option value="opt21" label="Option 2 1"/>
         <option value="opt22" label="Option 2 2"/>
+      </cascadedoptionlist>
+    </item>
+
+    <item id="A06a" label="Question A06" type="CascadedSelect" 
+       noderef="A06" appearance="full" alert="Question A06 alert" required="false()">
+      <cascadedoptionlist refvalue="opt20">
+        <option label="Option 0 0" value="opt200"/>
+        <option label="Option 0 1" value="opt201"/>
+        <option label="Option 0 2" value="opt202"/>
+      </cascadedoptionlist>
+      <cascadedoptionlist refvalue="opt10">
+        <option label="Option 1 0" value="opt100"/>
+        <option label="Option 1 1" value="opt101"/>
+        <option label="Option 1 2" value="opt102"/>
       </cascadedoptionlist>
     </item>
 

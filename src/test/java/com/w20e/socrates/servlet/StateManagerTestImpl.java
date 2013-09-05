@@ -24,13 +24,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
+
 import com.w20e.socrates.data.Instance;
 import com.w20e.socrates.data.Node;
 import com.w20e.socrates.model.InvalidPathExpression;
 import com.w20e.socrates.model.ItemProperties;
 import com.w20e.socrates.model.Model;
 import com.w20e.socrates.model.NodeValidator;
-import com.w20e.socrates.rendering.CascadedSelect;
 import com.w20e.socrates.rendering.Control;
 import com.w20e.socrates.rendering.Group;
 import com.w20e.socrates.rendering.Option;
@@ -89,7 +90,7 @@ public final class StateManagerTestImpl implements StateManager {
 	 * @param inst
 	 *            The instance to use.
 	 */
-	public void init(final RenderConfig cfg, final Model m, final Instance inst) {
+	public void init(final Configuration config, final RenderConfig cfg, final Model m, final Instance inst) {
 
 		this.instance = inst;
 		this.model = m;
@@ -298,30 +299,8 @@ public final class StateManagerTestImpl implements StateManager {
 
 		ItemProperties props = this.model.getItemProperties(node.getName());
 
-
 		if (!NodeValidator.isRelevant(props, this.instance, this.model)) {
 			return false;
-		}
-
-		if ("cascadedselect".equals(c.getType())) {
-			String ref = ((CascadedSelect) c).getNodeRef();
-
-			if (ref == null) {
-				return false;
-			}
-
-			try {
-				String refvalue = this.instance.getNode(ref).getValue()
-						.toString();
-
-				Collection<Option> options = ((CascadedSelect) c).getOptions(refvalue);
-				
-				if (options.size() == 0) {
-					return false;
-				}
-			} catch (Exception e) {
-				return false;
-			}
 		}
 
 		return true;
