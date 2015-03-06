@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import junit.framework.TestCase;
+
 import com.w20e.socrates.model.InstanceImpl;
 import com.w20e.socrates.model.ModelImpl;
 import com.w20e.socrates.model.NodeImpl;
@@ -11,18 +13,11 @@ import com.w20e.socrates.process.RunnerContextImpl;
 import com.w20e.socrates.rendering.ControlImpl;
 import com.w20e.socrates.rendering.Input;
 import com.w20e.socrates.rendering.Renderable;
-import com.w20e.socrates.servlet.XMLRPCFormatter;
-
-import junit.framework.TestCase;
 
 public class TestXMLRPCFormatter extends TestCase {
 
-	private XMLRPCFormatter formatter;
-
 	protected void setUp() throws Exception {
 		super.setUp();
-
-		this.formatter = new XMLRPCFormatter();
 	}
 
 	public void testFormat() {

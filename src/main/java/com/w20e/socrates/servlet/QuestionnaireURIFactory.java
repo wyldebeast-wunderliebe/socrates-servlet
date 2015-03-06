@@ -2,7 +2,6 @@ package com.w20e.socrates.servlet;
 
 import java.io.File;
 import java.net.URI;
-import java.util.Locale;
 import java.util.logging.Logger;
 
 /**
@@ -47,10 +46,9 @@ public final class QuestionnaireURIFactory {
 	 * @param locale
 	 * @return
 	 */
-	public URI determineURI(final String rootDir, final String surveyId,
-			final Locale locale) {
+	public URI determineURI(final String rootDir, final String surveyId) {
 
-		String cId = surveyId + '-' + locale.toString();
+		String cId = surveyId;
 
 		File file = new File(rootDir
 				+ System.getProperty("file.separator", "/") + cId + ".xml");

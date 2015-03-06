@@ -7,7 +7,9 @@
 ## Main switch for choosing the right rendering
 ##
 #macro(renderItem $ctl)
-    #if ($ctl.getType() == "flowgroup")
+    #if ($ctl.getType() == "page")
+      #renderFlowGroup($ctl)
+    #elseif ($ctl.getType() == "flowgroup")
       #renderFlowGroup($ctl)
     #elseif ($ctl.getType() == "gridgroup")
       #renderGridGroup($ctl)

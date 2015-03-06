@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+    	                http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>socrates</groupId>
   <artifactId>socrates-servlet</artifactId>
@@ -7,20 +10,14 @@
   <version>1.0.8</version>
   <description></description>
 
-  <parent>
-    <groupId>com.w20e.socrates</groupId>
-    <artifactId>socrates</artifactId>
-    <version>2.1</version>
-    <relativePath>../pom.xml</relativePath>
-  </parent>
 
   <build>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
         </configuration>
       </plugin>      
     </plugins>
@@ -31,13 +28,8 @@
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates</artifactId>
-      <version>3.2.5</version>
+      <version>4.0.0</version>
     </dependency>  
-    <dependency>
-      <groupId>socrates</groupId>
-      <artifactId>socrates-impl</artifactId>
-      <version>2.3.11</version>
-    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -49,13 +41,13 @@
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates-velocity-formatter</artifactId>
-      <version>1.0.9</version>
+      <version>1.0.10</version>
       <scope>test</scope>
     </dependency>    
     <dependency>
       <groupId>socrates</groupId>
       <artifactId>socrates-xml-digester</artifactId>
-      <version>1.2.4</version>
+      <version>1.2.5</version>
       <scope>test</scope>
     </dependency>
     <dependency>

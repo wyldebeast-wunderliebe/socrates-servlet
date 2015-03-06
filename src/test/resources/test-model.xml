@@ -1,98 +1,104 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<questionnaire id="woliweb">
-  <metadata>
-    <meta name="foo" value="bar"/>
-    <meta name="foo2" value="bar2"/>
-  </metadata>
+<survey id="pipo"
 
-    <item id="A01" label="Question 请在这里写下来" type="Input" hint="Hint A01" 
-      alert="Question A01 alert"
-      relevant="((1 &gt;= -2000) and (2 &lt;= 4)) and (1 != 0)" default="" required="true()"/>
-    <item id="A02" label="Question A02" type="Select" hint="Hint A02" appearance="compact" 
-      datatype="xs:integer" alert="Question A02 alert" required="false()">
-      <option value="-10" label="Option 0" hint="Option -10 hint"/>
-      <option value="-11" label="Option 1"/>
-      <option value="-12" label="Option 2"/>
-    </item>
-    <item id="A02a" label="Question A02a" type="Select" hint="Hint A02a"
-       appearance="full" alert="Question A02 alert" required="true()" relevant="(A02 and (A02 &lt;= -19))">
-      <option value="refopt0" label="Option 0"/>
-      <option value="refopt1" label="Option 1"/>
-      <option value="refopt2" label="Option 2"/>
-    </item>
-    <itemgroup id="group0" label="" orientation="vertical" layout="flow">
-      <item id="A03" appearance="full" bind="A03" label="Question A03" type="Select" 
-        alert="Question A03 alert" required="true()">
-        <option value="" label="None"/>
-        <option value="refopt0" label="Option 0"/>
-        <option value="refopt1" label="Option 1"/>
-        <option value="refopt2" label="Option 2"/>
-      </item>
-      <item id="A04" bind="A04" label="Question A04" type="Input" alert="" required="true()"/>
-    </itemgroup>
-    <item id="A05" label="Question A05" type="Select" appearance="full"
-      alert="Question A05 alert" required="true()">
-      <option label="Option 0" value="opt0"/>
-      <option label="Option 1" value="opt1"/>
-      <option label="Option 2" value="opt2"/>
-    </item>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
 
-    <item id="A06" label="Question A06" type="CascadedSelect" 
-       noderef="A05" appearance="full" alert="Question A06 alert" required="false()">
-      <cascadedoptionlist refvalue="opt0">
-        <option label="Option 0 0" value="opt00"/>
-        <option label="Option 0 1" value="opt01"/>
-        <option label="Option 0 2" value="opt02"/>
-      </cascadedoptionlist>
-      <cascadedoptionlist refvalue="opt1">
-        <option label="Option 1 0" value="opt10"/>
-        <option label="Option 1 1" value="opt11"/>
-        <option label="Option 1 2" value="opt12"/>
-      </cascadedoptionlist>
-      <cascadedoptionlist refvalue="opt2">
-        <option value="opt20" label="Option 2 0"/>
-        <option value="opt21" label="Option 2 1"/>
-        <option value="opt22" label="Option 2 2"/>
-      </cascadedoptionlist>
-    </item>
+  xsi:noNamespaceSchemaLocation="/home/dokter/Work/w20e/socrates/survey.xsd">
 
-    <item id="A06a" label="Question A06" type="CascadedSelect" 
-       noderef="A06" appearance="full" alert="Question A06 alert" required="false()">
-      <cascadedoptionlist refvalue="opt20">
-        <option label="Option 0 0" value="opt200"/>
-        <option label="Option 0 1" value="opt201"/>
-        <option label="Option 0 2" value="opt202"/>
-      </cascadedoptionlist>
-      <cascadedoptionlist refvalue="opt10">
-        <option label="Option 1 0" value="opt100"/>
-        <option label="Option 1 1" value="opt101"/>
-        <option label="Option 1 2" value="opt102"/>
-      </cascadedoptionlist>
-    </item>
+  <data>
+    <vargroup name="xx">
+      <var name="bar" />
+      <var name="foo">1</var>
+      <vargroup name="yy">
+        <var name="pipo" />
+      </vargroup>
+    </vargroup>
+    <var name="zzz" />
+  </data>
 
-    <item id="A07" label="Question A07" type="Input" default="xxx" required="true()" 
-      datatype="xs:hours-quarters"/>
+  <model>
 
-    <item id="B01" spsslabel="" label="Question B01" type="Input" hint="Hint B01" 
-      alert="Question B01 alert" required="false()"/>
-    <itemgroup type="Matrix" id="opinion" label="Je mening ..." hint="" sample="">
+    <properties id="p0">
+      <bind>u_.*</bind>
+      <required>1</required>
+      <calculate>1 + 1</calculate>
+      <constraint>bar &lt; 1</constraint>
+      <readonly>333</readonly>
+      <relevant>bar &gt; 666</relevant>
+      <datatype>xs:integer</datatype>
+    </properties>
 
-      <option label="Helemaal mee oneens" hint="" value="1"/>
-      <option label="-" hint="" value="2"/>
-      <option label="-" hint="" value="3"/>
-      <option label="-" hint="" value="4"/>
-      <option label="Helemaal mee eens" hint="" value="5"/>
-      <option label="N.v.t." hint="" value="-8"/>
+    <properties id="p1">
+      <bind>foo</bind>
+      <relevant>bar &gt; 666</relevant>
+    </properties>
 
-      <item id="M1" label="Donald Duck is koel" hint="" type="MatrixItem"
-        relevant="" required="" datatype="xs:integer" alert="" constraint="" default="">
-      </item>
-      <item id="M2" label="Pep is oubollig" hint="" type="MatrixItem" 
-        relevant="" required="" datatype="xs:integer" alert="" constraint="" default="">
-      </item>
-      <item id="M3" label="Okki regeert grote tijd" hint="" type="MatrixItem" 
-        relevant="" required="" datatype="xs:integer" alert="" constraint="" default="">
-      </item>
-    </itemgroup>
+    <properties id="pipo_required">
+      <bind>pipo</bind>
+      <required>1</required>
+    </properties>
 
-</questionnaire>
+  </model>
+
+  <layout>
+
+    <optionset id="yesno">
+      <option value="1"><label i18n:trans="">yes</label></option>
+      <option value="0"><label i18n:trans="">no</label></option>
+    </optionset>
+
+    <group id="grp0" layout="page">
+      <label i18n:translate="">This is a group</label>
+      <hint></hint>
+
+	  <input bind="pipo" id="A1">
+        <label i18n:translate="">How are you today?</label>
+	  </input>
+
+      <text>Some text...</text>
+
+      <select bind="bar" id="pan">
+        <label i18n:translate="">Pick a number</label>
+        <option value="1"><label>1</label></option>
+        <option><label>2</label></option>
+        <option value="666"><label>666</label></option>
+      </select>
+
+      <select bind="foo" id="padddn"></select>
+  
+      <text id="moretext">Some more text...</text>
+    
+  	</group>
+  	
+    <group id="grp1" layout="page">
+      <label i18n:translate="">This is another group</label>
+
+      <text>Some more text...</text>
+
+	</group>
+
+    <group id="grp2" layout="page">
+      <label i18n:translate="">This is yet another group</label>
+
+      <text>Some more text...</text>
+      <group id="grp3" layout="matrix">
+        <label i18n:translate="">The matrix...</label>
+        <select bind="bar" id="select_grp3_1">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>
+        <select bind="bar" id="select_grp3_2">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>
+        <select bind="bar" id="select_grp3_3">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>  	
+      </group>  	
+
+	</group>
+  	
+  </layout>
+</survey>

@@ -166,7 +166,7 @@ public final class ValidatorHelper {
 			if (itemProps.getCalculate() != null) {
 				try {
 				    Object val = control.getDisplayValue(NodeValidator.getValue(n,
-				            itemProps, model, inst), itemProps.getType(), locale);
+				            itemProps, model, inst), itemProps.getDatatype(), locale);
 				    localProps.put("value", val.toString());
 				} catch (Exception  e) {
 				    LOGGER.severe("Exception in resolve of value: " + e.getMessage());
@@ -174,15 +174,15 @@ public final class ValidatorHelper {
 			}
 
 			// Redo label if necessary
-			if (control.getLabel().indexOf("${") != -1) {
-				String label = FillProcessor.processFills(control.getLabel(),
+			if (control.getLabel().toString().indexOf("${") != -1) {
+				String label = FillProcessor.processFills(control.getLabel().toString(),
 						inst, model, cfg, locale);
 				localProps.put("label", label);
 			}
 
 	         // Redo hint if necessary
-            if (control.getHint().indexOf("${") != -1) {
-                String hint = FillProcessor.processFills(control.getHint(),
+            if (control.getHint().toString().indexOf("${") != -1) {
+                String hint = FillProcessor.processFills(control.getHint().toString(),
                         inst, model, cfg, locale);
                 localProps.put("hint", hint);
             }
@@ -194,13 +194,13 @@ public final class ValidatorHelper {
                     localProps.put("alert", "");
 				} catch (Exception cv) {
 				    LOGGER.finest("Exception during validation" + cv.getMessage());
-				    LOGGER.finest("Node value: " + n.getValue() +"; type " + itemProps.getType());
+				    LOGGER.finest("Node value: " + n.getValue() +"; type " + itemProps.getDatatype());
 					String msg = "";
 
 					if ("".equals(((Control) rItem).getAlert())) {
 						msg = translateError(cv.getMessage(), bundle);
 					} else {
-						msg = ((Control) rItem).getAlert();
+						msg = ((Control) rItem).getAlert().toString();
 					}
 					localProps.put("alert", msg);
 				}

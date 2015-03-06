@@ -176,12 +176,8 @@ public class WebsurveyServlet extends HttpServlet {
         // Always use UTF!
         res.setContentType("text/html;charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-        
-        // P3P header necessary for IE cookie policy
-        res.addHeader("P3P", "CP='CAO PSA CONi OUR DEM ONL'");
 
         // Thou shalst not cache...
-        res.addHeader("Expires", "-1");
         res.addHeader("Cache-Control", "no-cache");
         res.addHeader("Pragma", "No-Cache");
 
@@ -252,7 +248,7 @@ public class WebsurveyServlet extends HttpServlet {
                 LOGGER.finer("Locale: " + wwCtx.getLocale());
 
                 URI qUri = QuestionnaireURIFactory.getInstance().determineURI(
-                        this.rootDir, wwCtx.getModelId(), wwCtx.getLocale());
+                        this.rootDir, wwCtx.getModelId());
 
                 RunnerContextImpl ctx = this.runnerFactory.createContext(qUri,
                         null);
@@ -269,6 +265,11 @@ public class WebsurveyServlet extends HttpServlet {
             LOGGER.finer("Session id " + session.getId());
             LOGGER.finer("Context id "
                     + ctx.getInstance().getMetaData().get("key"));
+
+            // set locale if requested later on, when the survey is well under way...
+            if (req.getParameter("locale") != null && req.getParameter("id") == null) {
+            	ctx.setLocale(LocaleUtility.getLocale(req.getParameter("locale"), false));
+            }
 
             // Add specific options
             // @todo This should move to the runner creation options.
@@ -304,7 +305,7 @@ public class WebsurveyServlet extends HttpServlet {
             // hold the runner?
             //
             URI qUri = QuestionnaireURIFactory.getInstance().determineURI(
-                    this.rootDir, wwCtx.getModelId(), wwCtx.getLocale());
+                    this.rootDir, wwCtx.getModelId());
 
             Runner runner = this.runnerFactory.createRunner(qUri);
 
@@ -366,9 +367,7 @@ public class WebsurveyServlet extends HttpServlet {
                     "storage-type"))) {
                 LOGGER.fine("Invalidating long session");
 
-                String surveyId = ServletHelper.generateSurveyId(ctx
-                        .getInstance().getMetaData().get("qId").toString(), ctx
-                        .getLocale().toString());
+                String surveyId = ctx.getInstance().getMetaData().get("qId").toString();
 
                 this.sessionMgr.invalidateLongSession(surveyId, req, res);
             }
@@ -466,7 +465,8 @@ public class WebsurveyServlet extends HttpServlet {
     }
 
     /**
-     * Initialize the runner for a given questionnaire. The runner, if successfully created, is stored in the 'runnerCtx' attribute
+     * Initialize the runner for a given questionnaire. The runner, if 
+     * successfully created, is stored in the 'runnerCtx' attribute
      * of the session. 
      * 
      * @param req HTTP request
@@ -481,17 +481,9 @@ public class WebsurveyServlet extends HttpServlet {
         String id = req.getParameter("id");
         
         LOGGER.finest("Parameter id is " + id);
-        LOGGER.finest("Parameter locale is " + req.getParameter("locale"));
-        Locale locale = LocaleUtility.getLocale(req.getParameter("locale"),
-                true);
-        LOGGER.finest("Using locale " + locale);
-
-        // Unique id for survey, defined by id and locale
-        //
-        String surveyId = ServletHelper.generateSurveyId(id, locale.toString());
 
         URI qUri = QuestionnaireURIFactory.getInstance().determineURI(
-                this.rootDir, id, locale);
+        		this.rootDir, id);
 
         /**
          * Get global config.
@@ -510,6 +502,25 @@ public class WebsurveyServlet extends HttpServlet {
         try {
             RunnerContextImpl ctx = this.runnerFactory.createContext(qUri,
                     options);
+            
+            // Check whether the instance has a variable locale set. If so, this becomes the default.
+            //
+            Locale locale = null;
+            
+            try {
+            	locale = LocaleUtility.getLocale(ctx.getInstance().getNode("locale").getValue().toString(), true);
+            } catch (Exception e) {
+            	locale = LocaleUtility.DEFAULT_LOCALE;
+            }
+
+        	LOGGER.fine("Using default locale " + locale);
+
+            // Now see if we need to take the locale from the request
+            // parameters or the user agent headers.
+            locale = ServletHelper.getLocale(req, locale);
+
+            LOGGER.finest("Using locale " + locale);
+            
             ctx.setLocale(locale);
             ctx.setQuestionnaireId(qUri);
 
@@ -521,13 +532,12 @@ public class WebsurveyServlet extends HttpServlet {
             if ("true".equals(cfg.getString("enablelongsessions", "true"))) {
 
                 LOGGER.info("Has long session? "
-                        + this.sessionMgr.hasLongSession(req, surveyId));
+                        + this.sessionMgr.hasLongSession(req, id));
 
-                if (this.sessionMgr.hasLongSession(req, surveyId)
+                if (this.sessionMgr.hasLongSession(req, id)
                         && !"true".equals(options.get("disable_reload"))) {
 
-                    Instance inst = this.sessionMgr.salvageInstance(surveyId,
-                            req, ctx);
+                    Instance inst = this.sessionMgr.salvageInstance(id, req, ctx);
 
                     if (inst != null) {
                         ctx.setInstance(inst);
@@ -591,8 +601,8 @@ public class WebsurveyServlet extends HttpServlet {
                 // already have it, and set output
                 // file name.
                 //
-                if (!this.sessionMgr.hasLongSession(req, surveyId)) {
-                    this.sessionMgr.createLongLivedSession(surveyId, meta.get(
+                if (!this.sessionMgr.hasLongSession(req, id)) {
+                    this.sessionMgr.createLongLivedSession(id, meta.get(
                             "filename").toString()
                             + "||" + session.getId(), res);
                 }

@@ -1,7 +1,6 @@
 package com.w20e.socrates.servlet;
 
 import java.io.File;
-import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -35,7 +34,7 @@ public class TestWebsurveyServlet extends TestCase {
 	}
 
 	public void testDoPost() {
-
+		
 		WebResponse response = null;
 
 		try {
@@ -43,33 +42,21 @@ public class TestWebsurveyServlet extends TestCase {
 			response = this.client
 			.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB");
 					
-			// test render options
-			assertTrue(response.getText().indexOf("enable_js: true") > -1);
-			assertTrue(response.getText().indexOf("enable_ajax_validation: false") > -1);
-			
-			// welcoming page, now without JS
-			response = this.client
-					.getResponse("http://localhost/Survey?id=websurvey-test-config&locale=en_GB&enable_js=false");
-
 			// register handler here, to make sure proper config is done.
 			HandlerManager.getInstance().register("file",
 					new XMLFileSubmissionHandler());
-
+			
 			// System.out.println(response.getText());
 			WebForm form = response.getFormWithID("survey");
 			assertNotNull("No form found", form);
 			assertEquals("Form method", "POST", form.getMethod());
 			assertEquals("Form action", "Survey", form.getAction());
-
-			assertTrue("Input field", form.isTextParameter("A01"));
+			
+			assertTrue("Input field", form.isTextParameter("A1"));
 			assertTrue("Input field", form.isTextParameter("stateId"));
-			
-			// test render options
-			assertTrue(response.getText().indexOf("enable_js: false") > -1);
-			assertTrue(response.getText().indexOf("enable_ajax_validation: false") > -1);
-			
-			form.setParameter("A01", "");
-			
+						
+			form.setParameter("A1", "");
+
 			// Let's not fill in any data, and see
 			response = form.submit();
 
@@ -80,10 +67,10 @@ public class TestWebsurveyServlet extends TestCase {
 			assertEquals("Form method", "POST", form.getMethod());
 			assertEquals("Form action", "Survey", form.getAction());
 
-			assertTrue("Input field", form.isTextParameter("A01"));
+			assertTrue("Input field", form.isTextParameter("A1"));
 
 			// fill in field value, since it is required...
-			form.setParameter("A01", "请在这里写下来");
+			form.setParameter("A1", "请在这里写下来");
 			response = form.submit();
 
 			form = response.getFormWithID("survey");
@@ -91,6 +78,9 @@ public class TestWebsurveyServlet extends TestCase {
 			assertNotNull("No form found", form);
 			assertEquals("Form method", "POST", form.getMethod());
 			assertEquals("Form action", "Survey", form.getAction());
+			
+/*			System.out.println(response.getText());
+
 			assertEquals("A02 options", Arrays.asList(new String[] { "-10",
 					"-11", "-12" }), Arrays.asList(form.getOptionValues("A02")));
 
@@ -196,7 +186,7 @@ public class TestWebsurveyServlet extends TestCase {
 			
 			// Submission, or so I hope...
 			//response = form.submit();
-			
+*/			
 		} catch (Exception e) {
 			e.printStackTrace();
 			fail();

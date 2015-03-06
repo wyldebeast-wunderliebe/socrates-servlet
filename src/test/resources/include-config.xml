@@ -5,23 +5,21 @@
     <no_render_info>No rendering info found</no_render_info>
   </messages>
 
-  <statemanager>
-    <class>com.w20e.socrates.servlet.StateManagerTestImpl</class>
-  </statemanager>
-
   <runner>
     <url>file:./target/test-classes/test-workflow.xml</url>
   </runner>
 
   <formatter>
-  
     <options>
       <enable_js>true</enable_js>
       <enable_ajax_validation>false</enable_ajax_validation>
     </options>
   
     <class>com.w20e.socrates.formatting.VelocityHTMLFormatter</class>
-    <locale><prefix>websurvey</prefix></locale>
+    <locale>
+      <prefix>websurvey</prefix>
+      <basename>com.w20e.socrates.servlet.Messages</basename>
+    </locale>
     <velocity>
       <velocimacro>
         <library>Macros.vm</library>
@@ -43,7 +41,6 @@
   </formatter>
 
   <model>
-    <factory>com.w20e.socrates.factories.XMLQuestionnaireFactory</factory>
     <id>file:target/test-classes/test-model.xml</id>
   </model>
 

@@ -1,14 +1,19 @@
 package com.w20e.socrates.servlet;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
+import com.w20e.socrates.util.LocaleUtility;
 
 public class ServletHelper {
 
@@ -155,11 +160,32 @@ public class ServletHelper {
     }
 
     /**
-     * Generate unique survey id of id and locale.
+     * Get locale from parameters, request headers or use default.
+     * @param req HTTP request
+     * @param default Default locale
      */
-    public static String generateSurveyId(final String id, final String locale) {
-
-        return id + "_" + locale;
+    public static Locale getLocale(final HttpServletRequest req, final Locale defaultLocale) {
+    	
+    	Locale locale = defaultLocale;
+    	
+    	if (req.getParameter("locale") != null) {
+    		try {
+    			locale = LocaleUtility.getLocale(req.getParameter("locale"), false);
+    		} catch (Exception e) {
+    			LOGGER.warning("Locale parameter provided, but no Locale found: " + req.getParameter("locale"));
+    		}
+    	} else {
+    	
+    		@SuppressWarnings("unchecked")
+			List<Locale> list = Collections.list(req.getLocales());
+    	
+    		if (list.size() > 1) {
+    			locale = req.getLocale();
+    			LOGGER.info("User agent provided locale " + locale.toString());
+    		}
+    	}
+    	
+    	return locale;
     }
 
     /**
