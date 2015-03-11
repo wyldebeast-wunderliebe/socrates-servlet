@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<survey id="pipo"
+
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+
+  xsi:noNamespaceSchemaLocation="/home/dokter/Work/w20e/socrates/survey.xsd">
+
+  <data>
+    <vargroup name="xx">
+      <var name="bar" />
+      <var name="foo">1</var>
+      <vargroup name="yy">
+        <var name="pipo" />
+      </vargroup>
+    </vargroup>
+    <var name="zzz" />
+  </data>
+
+  <model>
+
+    <properties id="p0">
+      <bind>u_.*</bind>
+      <required>1</required>
+      <calculate>1 + 1</calculate>
+      <constraint>bar &lt; 1</constraint>
+      <readonly>333</readonly>
+      <relevant>bar &gt; 666</relevant>
+      <datatype>xs:integer</datatype>
+    </properties>
+
+    <properties id="p1">
+      <bind>foo</bind>
+      <relevant>bar &gt; 666</relevant>
+    </properties>
+
+    <properties id="pipo_required">
+      <bind>pipo</bind>
+      <required>1</required>
+    </properties>
+
+  </model>
+
+  <layout>
+
+    <optionset id="yesno">
+      <option value="1"><label i18n:trans="">yes</label></option>
+      <option value="0"><label i18n:trans="">no</label></option>
+    </optionset>
+
+    <group id="grp0" layout="page">
+      <label i18n:translate="">This is a group</label>
+      <hint></hint>
+
+	  <input bind="pipo" id="A1">
+        <label i18n:translate="">How are you today?</label>
+	  </input>
+
+      <text>Some text...</text>
+
+      <select bind="bar" id="pan">
+        <label i18n:translate="">Pick a number</label>
+        <option value="1"><label>1</label></option>
+        <option><label>2</label></option>
+        <option value="666"><label>666</label></option>
+      </select>
+
+      <select bind="foo" id="padddn"></select>
+  
+      <text id="moretext">Some more text...</text>
+    
+  	</group>
+  	
+    <group id="grp1" layout="page">
+      <label i18n:translate="">This is another group</label>
+
+      <text>Some more text...</text>
+
+	</group>
+
+    <group id="grp2" layout="page">
+      <label i18n:translate="">This is yet another group</label>
+
+      <text>Some more text...</text>
+      <group id="grp3" layout="matrix">
+        <label i18n:translate="">The matrix...</label>
+        <select bind="bar" id="select_grp3_1">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>
+        <select bind="bar" id="select_grp3_2">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>
+        <select bind="bar" id="select_grp3_3">
+	  	  <label>Yes... or... no?</label>
+		  <optionset ref="yesno" />
+        </select>  	
+      </group>  	
+
+	</group>
+  	
+  </layout>
+</survey>

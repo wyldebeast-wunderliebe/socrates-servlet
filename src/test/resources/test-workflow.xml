@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+
+<workflow>
+
+  <!-- all action definitions -->
+  <actions>
+    <action id="next" class="com.w20e.socrates.process.Next"/>
+    <action id="render" class="com.w20e.socrates.process.Render"/>
+    <action id="validate" class="com.w20e.socrates.process.Validate"/>
+    <action id="submit" class="com.w20e.socrates.process.Submit"/>
+  </actions>
+
+  <initial idref="next"/> 
+
+  <!-- processing steps -->
+  <mappings>
+
+    <!-- Main loop -->
+    <mapping from="render" to="validate" condition="wait"/>
+    <mapping from="validate" to="render" condition="fail"/>
+    <mapping from="validate" to="next" condition="ok"/>
+    <mapping from="next" to="render" condition="ok"/>
+
+    <!-- No next state -->
+    <mapping from="next" to="submit" condition="fail"/>
+
+  </mappings>
+
+  <finals>
+    <final idref="submit"/>
+  </finals>
+
+</workflow>

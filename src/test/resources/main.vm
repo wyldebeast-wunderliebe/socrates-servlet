@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+  #header()
+  <body>
+  
+    <!-- render options -->
+    #foreach ($opt in $renderOptions.keys())
+      <!-- $opt: $renderOptions.isEnabled($opt, false) -->
+    #end
+  
+    #formHeader(1 1)
+
+    #foreach ($item in $items)
+      #renderItem($item)
+    #end
+
+    #formFooter(1 1)
+  </body>
+</html>

@@ -1,0 +1,339 @@
+##
+## Macros for Wageindicator websurvey VM resources.
+##
+
+
+##
+## Main switch for choosing the right rendering
+##
+#macro(renderItem $ctl)
+    #if ($ctl.getType() == "page")
+      #renderFlowGroup($ctl)
+    #elseif ($ctl.getType() == "flowgroup")
+      #renderFlowGroup($ctl)
+    #elseif ($ctl.getType() == "gridgroup")
+      #renderGridGroup($ctl)
+    #elseif ($ctl.getType() == "matrix")
+      #renderMatrix($ctl)
+    #elseif ($ctl.getType() == "select")
+      #renderSelect($ctl)
+    #elseif ($ctl.getType() == "textarea")
+      #renderTextArea($ctl)
+    #elseif ($ctl.getType() == "input")
+      #renderInput($ctl)
+    #elseif ($ctl.getType() == "output")
+      #renderOutput($ctl)
+    #elseif ($ctl.getType() == "hidden")
+      #renderHidden($ctl)
+    #end
+#end
+
+
+##
+## Render an input widget
+##
+#macro(renderInput $item)
+  <div class="field" id="field-$item.getId()">
+
+    #fieldHeader($item)
+
+    <input type="text" name="$item.getId()"
+      value="$context.get($item.getId()).get('lexical_value')"
+    />
+  </div>
+#end
+
+
+##
+## Render textarea widget
+##
+#macro(renderTextArea $item)
+  <div class="field" id="field-$item.getId()">
+
+    #fieldHeader($item)
+
+    <textarea name="$item.getId()" rows="3" cols="40"
+    >$context.get($item.getId()).get('value')</textarea>
+  </div>
+#end
+
+
+##
+## Render a select widget. The select can be rendered in three ways,
+## defined by the appearance setting:
+## 0 - full, rendered as radio input
+## 1 - compact, rendered as a select of size 3
+## 2 - minimal, redered as a select of size 1
+##
+#macro(renderSelect $item)
+  <div class="field" id="field-$item.getId()">
+
+    #fieldHeader($item)
+
+    #if ($item.getProperty("appearance") == "minimal")
+      <select id="$item.getId()" name="$item.getId()">
+        #foreach ($opt in $context.get($item.getId()).get('options'))
+          <option title="$opt.getHint()" value="$opt.getValue()"
+          #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
+            selected="selected"
+          #end
+          >$opt.getLabel()</option>
+        #end
+      </select>
+    #elseif ($item.getProperty("appearance") == "compact")
+      <select id="$item.getId()" name="$item.getId()" size="3">
+        #foreach ($opt in $context.get($item.getId()).get('options'))
+          <option title="$opt.getHint()" value="$opt.getValue()"
+          #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
+            selected="selected"
+          #end
+          >$opt.getLabel()</option>
+        #end
+      </select>
+    #else
+      #foreach ($opt in $context.get($item.getId()).get('options'))
+        <input type="radio" name="$item.getId()" id="$opt.getValue()" value="$opt.getValue()"
+        #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
+          checked="checked"
+        #end
+        >
+	<label title="$item.getHint()" for="$opt.getValue()">$opt.getLabel()
+	</label>
+	</br>
+      #end
+    #end
+  </div>
+#end
+
+
+##
+## Render a cascaded select
+##
+#macro(renderCascadedSelect $item)
+  <div class="field" id="field-$item.getId()">
+
+    #fieldHeader($item)
+
+    <select name="$item.getId()">
+      #foreach ($opt in $context.get($item.getId()).get('options'))
+        <option title="$opt.getHint()" value="$opt.getValue()"
+        #if ("$context.get($item.getId()).get('value')" == "$opt.getValue()")
+          selected="selected"
+        #end
+        >$opt.getLabel()</option>
+      #end
+    </select>
+  </div>   
+#end
+
+
+##
+## Render Output field
+##
+#macro(renderOutput $item)
+  <div class="field" id="field-$item.getId()">
+
+    #fieldHeader($item)
+
+  </div>
+#end
+
+
+##
+## Render hidden field
+##
+#macro(renderHidden $item)
+  <input type="hidden" name="$item.getId()"
+    value="$context.get($item.getId()).get('value')"/>
+#end
+
+
+##
+## Render a flow group. Default flow direction is horizontal.
+##
+#macro(renderFlowGroup $grp)
+  <fieldset class="group" id="$grp.getId()">
+    <label>$grp.getLabel()</label>
+    #foreach ($item in $grp.getItems())
+      #renderItem($item)
+      #if ($grp.getOrientation() == "vertical")
+        </br>
+      #end
+    #end
+  </fieldset>
+#end
+
+
+##
+## Render a matrix.
+##
+#macro(renderMatrix $grp)
+  <fieldset class="matrix" id="$grp.getId()">
+    <label>$grp.getLabel()</label>
+
+    <table>
+      <thead>
+        <tr>
+          <th/>
+          #foreach ($opt in $grp.getOptions())
+            <th>$opt.getLabel()</th>
+          #end
+        </tr>
+      </thead>
+
+      <tbody>
+        #foreach ($it in $grp.getItems())
+          <tr>
+            <th>$it.getLabel()</th>
+	    <td>$grp.getId()</td> 
+	    #foreach ($opt in $grp.getOptions())
+	      <td>
+                <input type="radio" name="$it.getId()"
+                  value="$opt.getValue()"
+        	  #if ("$context.get($it.getId()).get('value').toString()" == "$opt.getValue()")
+          	    checked="checked"
+        	  #end
+                />
+              </td>
+	    #end
+            
+          </tr>
+        #end
+      </tbody>
+    </table>
+  </fieldset>
+#end
+
+
+##
+## Render a grid group.
+##
+#macro(renderGridGroup $grp)
+  <fieldset class="group" id="$grp.getId()">
+    <label>$grp.getLabel()</label>
+    <table>
+      <tr>
+      #foreach ($item in $grp.getItems())
+        #renderItem($item)
+	#if ($grp.getCols())
+	  </tr><tr>
+	#end
+      #end
+      </tr>
+    </table>
+  </fieldset>
+#end
+
+
+##
+## Render a field header. This includes label, hint and help.
+##
+#macro(fieldHeader $ctl)
+  <label for="$ctl.getId()">$ctl.getLabel()</label>
+  #if ($context.get($ctl.getId()).get("alert") != "")
+    <div class="alert">$ctl.getAlert()</div>
+  #end
+  <div class="hint">$ctl.getHint()</div>
+  <div class="help">$ctl.getHelp()</div>
+#end
+
+
+##
+## Render page header.
+##
+#macro(header)
+  <head>
+    <title>Wageindicator</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="date" content="$metadata.get('Created')">
+    <meta name="language" content="$metadata.get('Locale')">
+    #css()
+  <head/>
+#end
+
+
+##
+## Render Section header and progress bar.
+##
+#macro(sections $section)
+  <div class="progress">
+    <center><div class="probar" style="width: $percentage_done%"></div></center>
+  </div>
+#end
+##############################################################################
+##
+## Wageindicator Base macros, used by all 'resource' products
+##
+##############################################################################
+
+
+## Debug macro
+##
+#macro(debug $item)
+  <div width="80%" align="right">
+    <span class="state-id">$stateId</span>
+    <img src="img/debug.gif" style="cursor: pointer; cursor: hand;"
+      onclick="toggleDebugInfo('${item.getId()}_debug')"/>      
+    <table class="debugInfo" id="${item.getId()}_debug" width="100%">
+    #foreach( $key in $metadata.keySet() ) 
+      <tr><th>$key</th><td>$metadata.get($key)</td></tr>
+    #end
+      <tr><th>Item</th><td>$item.getId()</td></tr>
+      <tr><th>Relevant</th><td>$${item.getId()}_relevant_debug</td></tr>
+      <tr><th>Required</th><td>$${item.getId()}_required_debug</td></tr>
+      <tr><th>Constraint</th><td>$${item.getId()}_constraint_debug</td></tr>
+    </table>
+  </div>
+#end
+
+
+## Rendering for form header. Pass 1 or 0 for any of the arguments
+## determining whether next and previous are shown.
+##
+#macro(formHeader $showPrevious $showNext)
+  <form  accept-charset="UTF-8" id="survey" name="survey" action="Survey" method="POST">
+    <input type="hidden" name="stateId" value="$stateId"/>
+    #navbar($showPrevious $showNext)
+#end
+
+
+## Render the form footer.
+##
+#macro(formFooter $showPrevious $showNext)
+    <br/>
+    #navbar($showPrevious $showNext)
+  </form>
+#end
+
+
+## Render the navigation bar for header and footer
+##
+#macro(navbar $showPrevious $showNext)
+
+  #if ($showPrevious == 1 || $showNext == 1)
+    <table class="navbar $class">
+      <tr>
+      #if ($showPrevious == 1)
+        <td>
+          <input type="submit" name="previous" class="navPrev" 
+            value="previous"/>
+        </td>
+      #end
+      
+      #if ($showNext == 1)
+        <td>
+          <input type="submit" class="navNext" 
+            value="next"/>
+        </td>
+      #end
+    </tr>
+    </table>
+  #end
+#end
+
+
+#macro(css)
+  <link rel="stylesheet" href="css/woliweb.css" type="text/css">
+  <link rel="stylesheet" href="css/navigation.css" type="text/css">
+  <link rel="stylesheet" href="css/env.css" type="text/css">
+#end

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<woliweb>
+
+  <messages>
+    <no_render_info>No rendering info found</no_render_info>
+  </messages>
+
+  <runner>
+    <url>file:./target/test-classes/test-workflow.xml</url>
+  </runner>
+
+  <formatter>
+    <options>
+      <enable_js>true</enable_js>
+      <enable_ajax_validation>false</enable_ajax_validation>
+    </options>
+  
+    <class>com.w20e.socrates.formatting.VelocityHTMLFormatter</class>
+    <locale>
+      <prefix>websurvey</prefix>
+      <basename>com.w20e.socrates.servlet.Messages</basename>
+    </locale>
+    <velocity>
+      <velocimacro>
+        <library>Macros.vm</library>
+      </velocimacro>
+      <resource>
+        <loader>file</loader>
+      </resource>
+      <file>
+        <resource>
+          <loader>
+             <path>./target/test-classes/</path>
+          </loader>
+        </resource>
+      </file>
+      <template>
+        <encoding>UTF-8</encoding>
+      </template>
+    </velocity>
+  </formatter>
+
+  <model>
+    <id>file:target/test-classes/test-model.xml</id>
+  </model>
+
+  <submission>
+    <!--type>file</type-->
+    <type>none</type>
+    <!--basedir>./target/</basedir-->
+  </submission>
+
+</woliweb>
