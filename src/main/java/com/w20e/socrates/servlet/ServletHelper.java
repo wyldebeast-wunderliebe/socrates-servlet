@@ -169,6 +169,7 @@ public class ServletHelper {
     	Locale locale = defaultLocale;
     	
     	if (req.getParameter("locale") != null) {
+    		LOGGER.fine("locale param provided by client");
     		try {
     			locale = LocaleUtility.getLocale(req.getParameter("locale"), false);
     		} catch (Exception e) {

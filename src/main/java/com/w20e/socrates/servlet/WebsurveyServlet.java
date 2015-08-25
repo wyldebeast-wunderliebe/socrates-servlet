@@ -269,6 +269,20 @@ public class WebsurveyServlet extends HttpServlet {
             // set locale if requested later on, when the survey is well under way...
             if (req.getParameter("locale") != null && req.getParameter("id") == null) {
             	ctx.setLocale(LocaleUtility.getLocale(req.getParameter("locale"), false));
+            	LOGGER.fine("Locale change requested; set to " + LocaleUtility.getLocale(req.getParameter("locale"), false));
+            }
+            
+            // even check on locale in instance data...
+            try {
+            	Locale instanceLocale = LocaleUtility.getLocale(
+            					ctx.getInstance().getNode("locale").getValue().toString(), false);
+            	
+            	if (instanceLocale != null && instanceLocale != ctx.getLocale()) {
+            		LOGGER.fine("Locale is set in instance data: " + instanceLocale);
+            		ctx.setLocale(instanceLocale);
+            	}
+            } catch (Exception ex) {
+            	// not a problem...
             }
 
             // Add specific options
@@ -509,8 +523,10 @@ public class WebsurveyServlet extends HttpServlet {
             
             try {
             	locale = LocaleUtility.getLocale(ctx.getInstance().getNode("locale").getValue().toString(), true);
+            	LOGGER.fine("Using default locale set in model instance: " + locale);
             } catch (Exception e) {
             	locale = LocaleUtility.DEFAULT_LOCALE;
+            	LOGGER.warning("Not using default locale set in model instance due to errors, fall back: " + locale);
             }
 
         	LOGGER.fine("Using default locale " + locale);
@@ -519,7 +535,7 @@ public class WebsurveyServlet extends HttpServlet {
             // parameters or the user agent headers.
             locale = ServletHelper.getLocale(req, locale);
 
-            LOGGER.finest("Using locale " + locale);
+            LOGGER.fine("Using locale " + locale);
             
             ctx.setLocale(locale);
             ctx.setQuestionnaireId(qUri);
@@ -567,7 +583,7 @@ public class WebsurveyServlet extends HttpServlet {
             Map<String, Object> meta = ctx.getInstance().getMetaData();
 
             meta.put("qId", id);
-            meta.put("locale", locale);
+            meta.put("qLocale", locale);
 
             ServletHelper.setMetaData(req, meta);
 
