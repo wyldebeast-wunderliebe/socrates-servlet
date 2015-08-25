@@ -45,12 +45,6 @@
       <scope>test</scope>
     </dependency>    
     <dependency>
-      <groupId>socrates</groupId>
-      <artifactId>socrates-xml-digester</artifactId>
-      <version>1.2.5</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
       <version>1.7</version>
