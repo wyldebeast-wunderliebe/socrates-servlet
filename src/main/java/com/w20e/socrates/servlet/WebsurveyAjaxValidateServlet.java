@@ -68,7 +68,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
      * The init method creates an instance of the Socrates class, and allocates
      * initial resources. This includes compiling of XSL style sheets and
      * allocation of the database connections.
-     * 
+     *
      * @param c
      *            Servlet configuration
      * @throws ServletException
@@ -89,7 +89,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
      * runner context anyway. If a parameter called regkey is given, this
      * parameter is used for storage of the instance. This way, a user may
      * provide it's own key.
-     * 
+     *
      * @param req
      *            The request
      * @param res
@@ -147,18 +147,18 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
             Map<String, Map<String, String>> before = new HashMap<String, Map<String, String>>();
             Map<String, Map<String, String>> after = new HashMap<String, Map<String, String>>();
             Map<String, Map<String, String>> filtered = new HashMap<String, Map<String, String>>();
-            
+
             ValidatorHelper.getRenderableProperties(ctx.getStateManager().current().getItems(), before, ctx);
-            
+
             Collection<Renderable> found = new ArrayList<Renderable>();
-            
+
             findRenderables(params.keySet(), ctx.getStateManager().current().getItems(), found);
-            
+
             // Here we only set the data of the parameters we actually have...
             RenderStateImpl tmpState = new RenderStateImpl("TMP", found);
-            
+
             try {
-                DataHandler.setData(params, ctx.getModel(), ctx.getInstance(), tmpState);
+                DataHandler.setData(params, ctx.getModel(), ctx.getInstance(), tmpState, ctx.getLocale());
             } catch (ValidationException ve) {
                 // Not a problem here.
             }
@@ -166,14 +166,14 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
             ValidatorHelper.getRenderableProperties(ctx.getStateManager().current().getItems(), after, ctx);
 
             for (String rItem: before.keySet()) {
-                
+
                 Map<String, String> localProps = new HashMap<String, String>();
-                
+
                 for (String key: before.get(rItem).keySet()) {
                     try {
                         LOGGER.fine("Before '" + rItem + "', " + key + ": " + before.get(rItem).get(key));
                         LOGGER.fine("After '" + rItem + "', " + key + ": " + after.get(rItem).get(key));
-                        
+
                         if (!before.get(rItem).get(key).equals(after.get(rItem).get(key))) {
                             LOGGER.fine("Adding to filtered: " + key);
                             localProps.put(key, after.get(rItem).get(key));
@@ -192,7 +192,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
             OutputStream out = res.getOutputStream();
 
             ctx.setOutputStream(out);
-            
+
             this.formatter.format(filtered, out, ctx);
 
             res.getOutputStream().flush();
@@ -207,7 +207,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
         }
     }
 
-    
+
     /**
      * Recursively find renderables that are listed in keys.
      * @param keys
@@ -215,7 +215,7 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
      * @param found
      */
     private void findRenderables(Set<String> keys, Collection<Renderable> src, Collection<Renderable> found) {
-        
+
         for (Renderable r : src) {
             if (r instanceof Group) {
                 findRenderables(keys, ((Group) r).getItems(), found);
@@ -227,10 +227,10 @@ public class WebsurveyAjaxValidateServlet extends HttpServlet {
         }
     }
 
-            
+
             /**
      * Just forward to doPost.
-     * 
+     *
      * @param req
      *            The request
      * @param res
